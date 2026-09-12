@@ -226,13 +226,27 @@ def load_model(mode, network, model_file, weights=True,
                 extract_layers = len(before_keys - after_keys)
                 print("Linear layers removed to asssemble full clf: ", extract_layers)
                 del model_reset     # free memory
-        except Exception:
+        except Exception as timm_err:
             try:
-                # Try create timm model anyway
+                # Try create model from torchvision generic zoo
                 print('Trying model from PyTorch models: ', network)
-                model = getattr(models, network)(weights=True)
-            except :
-                raise ValueError(f"Model '{network}' not found anyway.")
+                if not hasattr(models, network):
+                    raise ValueError(f"'{network}' is not a torchvision.models attribute")
+                model = getattr(models, network)(weights="DEFAULT" if weights else None)
+            except Exception as tv_err:
+                raise ValueError(
+                    f"Model '{network}' not found. "
+                    f"Timm error: {timm_err!r}. Torchvision error: {tv_err!r}."
+                ) from tv_err
+            # No generic way to locate/replace the classifier head or infer
+            # feature-extractor depth across arbitrary torchvision archs
+            # (unlike timm's reset_classifier()), so this path can't safely
+            # continue into transfer/patch/single modes.
+            raise NotImplementedError(
+                f"Model '{network}' was found in torchvision but this fallback path "
+                "does not support automatic classifier-head replacement or "
+                "extract_layers detection for arbitrary torchvision models. "
+                "Add an explicit branch for it above.")
  
     # until here loaded vanilla model with or without default pretrain  #####
  
