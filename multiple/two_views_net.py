@@ -36,9 +36,10 @@ class TwoViewsMIDBreastClassifier(nn.Module):
                                                          num_classes=2)
                 self.single_clf_core = self.single_clf_full.feature_extractor
         else:
-            # Experiments before 2024
-            self.single_clf_full.load_state_dict(torch.load(model_file, map_location=device))  
-            self.single_clf_core = self.single_clf_full.feature_extractor  
+            # Experiments before 2024 - never fully ported, self.single_clf_full
+            # was never constructed here, so this always raised AttributeError.
+            raise NotImplementedError(
+                f"exp_type='{exp_type}' is not supported. Use 'SINGLE_PURE' or 'PATCH_BASED'.")
     def forward(self, x):
         x1_2 = self.single_clf_core(x[:, 0:3, :, :])
         x2_2 = self.single_clf_core(x[:, 3:6, :, :])
