@@ -24,7 +24,7 @@ class ResnetBlocks(nn.Module):
                 # For mode=fan_in, the variance of the distribution is
                 #  ensured in the forward pass, while for mode=fan_out,
                 #  it is ensured in the backwards pass.
-                if m.bias:              # Novo 2020-08-18- testar
+                if m.bias is not None:
                     nn.init.constant_(m.bias, 0)
             elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
                 nn.init.constant_(m.weight, 1)
