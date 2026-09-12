@@ -67,14 +67,14 @@ def load_model(mode, network, model_file, weights=True,
         extract_layers = 2
 
     elif network == 'alexnet':
-        model = models.alexnet(pretrained=weights)
+        model = models.alexnet(weights=models.AlexNet_Weights.DEFAULT if weights else None)
         num_ftrs = model.classifier[6].in_features
         model.classifier[6] = nn.Linear(num_ftrs, num_classes)
         inplanes = num_ftrs
         extract_layers = 2
 
     elif network == 'mnasnet1_0':
-        model = models.mnasnet1_0(pretrained=weights)
+        model = models.mnasnet1_0(weights=models.MNASNet1_0_Weights.DEFAULT if weights else None)
         num_ftrs = model.classifier[1].in_features
         model.classifier[1] = nn.Linear(num_ftrs, num_classes)
         inplanes = num_ftrs
@@ -88,7 +88,7 @@ def load_model(mode, network, model_file, weights=True,
         extract_layers = 1
 
     elif network == 'resnext50_32x4d':
-        model = models.resnext50_32x4d(pretrained=weights)
+        model = models.resnext50_32x4d(weights=models.ResNeXt50_32X4D_Weights.DEFAULT if weights else None)
         num_ftrs = model.fc.in_features
         model.fc = nn.Linear(num_ftrs, num_classes)
         inplanes = num_ftrs
